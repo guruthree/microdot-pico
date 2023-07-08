@@ -6,7 +6,9 @@
 #include "hardware/i2c.h"
 
 // IS31FL3730 Driver
-//
+
+// Wire replaced with stored function pointer to a write function
+
 #define ISSI_ADDR_DEFAULT 0x61
 
 #define ISSI_REG_CONFIG   0x00

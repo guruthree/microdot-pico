@@ -31,16 +31,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Adafruit_GFX.h"
-
 #include <cstdio>
 
+// Modifications:
+//   Arduino specific functions removed (no Print::write)
+//   GFXCanvas1 and GFXCanvas16 removed
+//   Button removed
+
+#include "Adafruit_GFX.h"
 #include "glcdfont.c"
-//#ifdef __AVR__
-//#include <avr/pgmspace.h>
-//#elif defined(ESP8266) || defined(ESP32)
-//#include <pgmspace.h>
-//#endif
 
 // Many (but maybe not all) non-AVR board installs define macros
 // for compatibility with existing PROGMEM-reading AVR code.
@@ -1476,63 +1475,8 @@ void Adafruit_GFX::getTextBounds(const char *str, int16_t x, int16_t y,
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief    Helper to determine size of a string with current font/size. Pass
-   string and a cursor position, returns UL corner and W,H.
-    @param    str    The ascii string to measure (as an arduino String() class)
-    @param    x      The current cursor X
-    @param    y      The current cursor Y
-    @param    x1     The boundary X coordinate, set by function
-    @param    y1     The boundary Y coordinate, set by function
-    @param    w      The boundary width, set by function
-    @param    h      The boundary height, set by function
-*/
-/**************************************************************************/
-/*void Adafruit_GFX::getTextBounds(const String &str, int16_t x, int16_t y,
-                                 int16_t *x1, int16_t *y1, uint16_t *w,
-                                 uint16_t *h) {
-  if (str.length() != 0) {
-    getTextBounds(const_cast<char *>(str.c_str()), x, y, x1, y1, w, h);
-  }
-}*/
 
-/**************************************************************************/
-/*!
-    @brief    Helper to determine size of a PROGMEM string with current
-   font/size. Pass string and a cursor position, returns UL corner and W,H.
-    @param    str     The flash-memory ascii string to measure
-    @param    x       The current cursor X
-    @param    y       The current cursor Y
-    @param    x1      The boundary X coordinate, set by function
-    @param    y1      The boundary Y coordinate, set by function
-    @param    w      The boundary width, set by function
-    @param    h      The boundary height, set by function
-*/
-/**************************************************************************/
-/*void Adafruit_GFX::getTextBounds(const __FlashStringHelper *str, int16_t x,
-                                 int16_t y, int16_t *x1, int16_t *y1,
-                                 uint16_t *w, uint16_t *h) {
-  uint8_t *s = (uint8_t *)str, c;
 
-  *x1 = x;
-  *y1 = y;
-  *w = *h = 0;
-
-  int16_t minx = _width, miny = _height, maxx = -1, maxy = -1;
-
-  while ((c = pgm_read_byte(s++)))
-    charBounds(c, &x, &y, &minx, &miny, &maxx, &maxy);
-
-  if (maxx >= minx) {
-    *x1 = minx;
-    *w = maxx - minx + 1;
-  }
-  if (maxy >= miny) {
-    *y1 = miny;
-    *h = maxy - miny + 1;
-  }
-}*/
 
 /**************************************************************************/
 /*!
@@ -1578,7 +1522,7 @@ void Adafruit_GFX::invertDisplay(bool i) {
 */
 /**************************************************************************/
 GFXcanvas8::GFXcanvas8(uint16_t w, uint16_t h) : Adafruit_GFX(w, h) {
-  uint32_t bytes = w * h * sizeof(uint8_t);
+  uint32_t bytes = w * h;
   if ((buffer = (uint8_t *)malloc(bytes))) {
     memset(buffer, 0, bytes);
   }
@@ -1603,12 +1547,10 @@ GFXcanvas8::~GFXcanvas8(void) {
 */
 /**************************************************************************/
 void GFXcanvas8::drawPixel(int16_t x, int16_t y, uint16_t color) {
-printf("draw pixel\n");
   if (buffer) {
     if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))
       return;
 
-    printf("%d, %d is %d\n", x, y, getPixel(x, y));
     int16_t t;
     switch (rotation) {
     case 1:
@@ -1628,13 +1570,6 @@ printf("draw pixel\n");
     }
 
     buffer[x + y * WIDTH] = color;
-
-//buffer[1] = 100;
-    printf("%d, %d is %d\n", x, y, getPixel(x, y));
-    printf("%d, %d is %d\n", x, y+1, getPixel(x, y+1));
-
-
-printf("buffer: %p\n", buffer);
   }
 }
 

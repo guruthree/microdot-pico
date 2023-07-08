@@ -6,19 +6,17 @@
 #include <cstdlib>
 #include <cstring>
 
-//#if ARDUINO >= 100
-//#include "Arduino.h"
-//#include "Print.h"
-//#else
-//#include "WProgram.h"
-//#endif
-
 #include "gfxfont.h"
 
 /// A generic graphics superclass that can handle all sorts of drawing. At a
 /// minimum you can subclass and provide drawPixel(). At a maximum you can do a
 /// ton of overriding to optimize. Used for any/all Adafruit displays!
-//class Adafruit_GFX : public Print {
+
+// Modifications:
+//   Arduino specific functions removed (no Print::write)
+//   GFXCanvas1 and GFXCanvas16 removed
+//   Button removed
+
 class Adafruit_GFX {
 
 public:
@@ -117,10 +115,6 @@ public:
                 uint16_t bg, uint8_t size_x, uint8_t size_y);
   void getTextBounds(const char *string, int16_t x, int16_t y, int16_t *x1,
                      int16_t *y1, uint16_t *w, uint16_t *h);
-  //void getTextBounds(const __FlashStringHelper *s, int16_t x, int16_t y,
-//                     int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h);
-//  void getTextBounds(const String &str, int16_t x, int16_t y, int16_t *x1,
-//                     int16_t *y1, uint16_t *w, uint16_t *h);
   void setTextSize(uint8_t s);
   void setTextSize(uint8_t sx, uint8_t sy);
   void setFont(const GFXfont *f = NULL);
@@ -184,13 +178,7 @@ public:
   /**********************************************************************/
   void cp437(bool x = true) { _cp437 = x; }
 
-//  using Print::write;
-//#if ARDUINO >= 100
-//  virtual size_t write(uint8_t);
-//#else
-//  virtual void write(uint8_t);
-//#endif
-    size_t write(uint8_t c);
+  size_t write(uint8_t c);
 
   /************************************************************************/
   /*!
@@ -279,7 +267,7 @@ protected:
 
 private:
   uint8_t *buffer;
-}; 
+};
 
 
 #endif // _ADAFRUIT_GFX_H
