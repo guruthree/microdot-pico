@@ -23,6 +23,7 @@ target_link_libraries(microdot-pico
     hardware_i2c
     pico_malloc
     pico_mem_ops
+    pico_multicore
 )
 pico_add_extra_outputs(microdot-pico)
 
