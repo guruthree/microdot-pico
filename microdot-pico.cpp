@@ -90,10 +90,11 @@ int main() {
 
                 // needs to end up 0-63, sine table ranges 0-128 so mod to get in range
                 // the table returns -127 to 127 so add + numthings*128 to remove negatives
-                //  then divide by numthings*4 to end up offset 0-63
-//                r = ((sine_table[val1 % 128] + sine_table[val2 % 128] + sine_table[val3 % 128]) + 3*128) / (3*24);
-//                r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*24);
-                r = ((sine_table[val3 % 128]) + 1*128) / (1*24);
+                //  then divide by numthings*20 to end up offset 0-12
+                // (matching the 12 brightness levels of MicroMatrix)
+//                r = ((sine_table[val1 % 128] + sine_table[val2 % 128] + sine_table[val3 % 128]) + 3*128) / (3*20);
+//                r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*20);
+                r = ((sine_table[val3 % 128]) + 1*128) / (1*20);
 
                 gfx.drawPixel(xcoord, ycoord, r);
 
