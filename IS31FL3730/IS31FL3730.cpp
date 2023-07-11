@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "hardware/i2c.h"
 #include "IS31FL3730.h"
 
 // IS31FL3730 Driver
