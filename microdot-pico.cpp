@@ -1,17 +1,20 @@
-#include "pico/stdlib.h"
 #include <cstdlib>
 #include <cstdio>
+#include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
 // Drive a pimoroni Microdot pHAT with a Pico
+// Demo with a plasma effect based on pico-composite-PAL-colour
 
+#include "random.h"
+#include "sine.h"
 #include "MicroMatrix.h"
 
 #define SDA_PIN 16
 #define SCL_PIN 17
 
-
+// from pico-composite-PAL-colour
 uint64_t time() {
     return to_us_since_boot(get_absolute_time());
 }
@@ -59,26 +62,70 @@ int main() {
 
     gfx.enableTimer();
 
+    // randomise the plasma
+    seed_random_from_rosc();
+
+    int8_t plasmavals[9] = {5, 2, 4, 2, 4, 8, 10, 7, 6};
+
+    uint64_t lastchange = 0;
+
     uint8_t atx = 0;
     uint8_t aty = 0;
     while (1) {
-        gfx.drawPixel(atx, aty, (atx)/3+1); // brightness matches coordinates
-        if ((aty % 2 == 0) && (atx % 2 == 0))
-            gfx.drawPixel(atx, aty, 1);
- 
-        atx++;
-        if (atx == 30) {
-            atx = 0;
-            aty++;
+        uint64_t now = time();
+
+        // combine (up to) three sine waves to make the plasma effect
+        uint32_t phase1 = ((time()*96)/1000000) % 128;
+        uint32_t phase2 = ((time()*64)/1000000) % 128;
+        uint32_t phase3 = ((time()*32)/1000000) % 128;
+        int32_t val1, val2, val3;
+        uint8_t r; // the final intensity of the plasma
+
+        for (uint8_t xcoord = 0; xcoord < MATRIXWIDTH; xcoord++) {
+            for (uint8_t ycoord = 0; ycoord < MATRIXHEIGHT; ycoord++) {
+
+                val1 = (5 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase1;
+                val2 = (5 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase2;
+                val3 = (5 * (plasmavals[6] * xcoord + plasmavals[7] * ycoord ) / (1*plasmavals[8])) + phase3;
+
+                // needs to end up 0-63, sine table ranges 0-128 so mod to get in range
+                // the table returns -127 to 127 so add + numthings*128 to remove negatives
+                //  then divide by numthings*4 to end up offset 0-63
+//                r = ((sine_table[val1 % 128] + sine_table[val2 % 128] + sine_table[val3 % 128]) + 3*128) / (3*24);
+//                r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*24);
+                r = ((sine_table[val3 % 128]) + 1*128) / (1*24);
+
+                gfx.drawPixel(xcoord, ycoord, r);
+
+            }          
         }
-        if (aty == 8) {
-           aty = 0;
+
+        // change the pattern every Xe6 microseconds
+        if ((time() - lastchange) > 10e6) {
+            for (uint8_t i = 0; i < 9; i++) {
+                int8_t l = 5; // scale of the plasma bubbles(?)
+
+                if (i == 0 || i == 3 || i == 6) {
+                    plasmavals[i] = randi(0, l);
+                }
+                else if (i == 1 || i == 4 || i == 7) {
+                    plasmavals[i] = plasmavals[i-1]*randi(-l/2, l/2);
+                }
+                else if (i == 2 || i == 5 || i == 8) {
+                    plasmavals[i] = randi(0, l*2);
+                }
+                if (plasmavals[i] == 0)
+                    plasmavals[i] = 1;
+            }
+
+            lastchange = time();
         }
+
 
         pinstate = !pinstate;
         gpio_put(LED_PIN, pinstate);
 
         gfx.flip();
-        sleep_ms(50);
+        sleep_us(10e3 - (time()-now));
     } 
 }
