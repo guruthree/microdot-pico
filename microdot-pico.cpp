@@ -65,7 +65,7 @@ int main() {
     // randomise the plasma
     seed_random_from_rosc();
 
-    int8_t plasmavals[9] = {5, 2, 4, 2, 4, 8, 10, 7, 6};
+    int8_t plasmavals[9] = {5, 2, 4, 1, 3, 8, 2, -1, 5};
 
     uint64_t lastchange = 0;
 
@@ -75,34 +75,34 @@ int main() {
         uint64_t now = time();
 
         // combine (up to) three sine waves to make the plasma effect
-        uint32_t phase1 = ((time()*96)/1000000) % 128;
-        uint32_t phase2 = ((time()*64)/1000000) % 128;
-        uint32_t phase3 = ((time()*32)/1000000) % 128;
+        uint32_t phase1 = ((time()*40)/1000000) % 128;
+        uint32_t phase2 = ((time()*32)/1000000) % 128;
+        uint32_t phase3 = ((time()*24)/1000000) % 128;
         int32_t val1, val2, val3;
         uint8_t r; // the final intensity of the plasma
 
         for (uint8_t xcoord = 0; xcoord < MATRIXWIDTH; xcoord++) {
             for (uint8_t ycoord = 0; ycoord < MATRIXHEIGHT; ycoord++) {
 
-                val1 = (5 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase1;
-                val2 = (5 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase2;
-                val3 = (5 * (plasmavals[6] * xcoord + plasmavals[7] * ycoord ) / (1*plasmavals[8])) + phase3;
+                val1 = (8 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase1;
+                val2 = (8 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase2;
+                val3 = (8 * (plasmavals[6] * xcoord + plasmavals[7] * ycoord ) / (1*plasmavals[8])) + phase3;
 
                 // needs to end up 0-63, sine table ranges 0-128 so mod to get in range
                 // the table returns -127 to 127 so add + numthings*128 to remove negatives
                 //  then divide by numthings*20 to end up offset 0-12
                 // (matching the 12 brightness levels of MicroMatrix)
 //                r = ((sine_table[val1 % 128] + sine_table[val2 % 128] + sine_table[val3 % 128]) + 3*128) / (3*20);
-//                r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*20);
-                r = ((sine_table[val3 % 128]) + 1*128) / (1*20);
+                r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*20);
+//                r = ((sine_table[val3 % 128]) + 1*128) / (1*20);
 
                 gfx.drawPixel(xcoord, ycoord, r);
 
             }          
         }
 
-        // change the pattern every Xe6 microseconds
-        if ((time() - lastchange) > 10e6) {
+        // change the pattern every Xe6 microseconds (X seconds)
+        if ((time() - lastchange) > 20e6) {
             for (uint8_t i = 0; i < 9; i++) {
                 int8_t l = 5; // scale of the plasma bubbles(?)
 
@@ -110,13 +110,13 @@ int main() {
                     plasmavals[i] = randi(0, l);
                 }
                 else if (i == 1 || i == 4 || i == 7) {
-                    plasmavals[i] = plasmavals[i-1]*randi(-l/2, l/2);
+                    plasmavals[i] = plasmavals[i-1]+randi(-l/3, l/3);
+                    if (rand() > 0.5)
+                        plasmavals[i] = -plasmavals[i];
                 }
                 else if (i == 2 || i == 5 || i == 8) {
-                    plasmavals[i] = randi(0, l*2);
+                    plasmavals[i] = randi(1, l);
                 }
-                if (plasmavals[i] == 0)
-                    plasmavals[i] = 1;
             }
 
             lastchange = time();
@@ -132,6 +132,7 @@ int main() {
         gpio_put(LED_PIN, pinstate);
 
         gfx.flip();
-        sleep_us(10e3 - (time()-now));
+        // sleep nominal Xe3 us (X ms)
+        sleep_us(20e3 - (time()-now));
     } 
 }
