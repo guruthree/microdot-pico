@@ -120,6 +120,11 @@ int main() {
             }
 
             lastchange = time();
+
+            // flash the screen to indicate new pattern
+            gfx.fillScreen(0);
+            gfx.flip();
+            sleep_ms(50);
         }
 
 
