@@ -1,4 +1,4 @@
-# pico-composite-PAL-colour #
+# microdot-pico #
 
 This is an example of getting Pimoroni's [Micro Dot pHAT](https://shop.pimoroni.com/products/microdot-phat) working with a Raspberry Pi Pico with the C SDK. The Micro Dot pHAT has three IS31FL3730 modules, each controlling two LTP-305 LED matrices.
 
