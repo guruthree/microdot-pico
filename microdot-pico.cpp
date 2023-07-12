@@ -22,7 +22,7 @@ uint64_t time() {
 
 int main() {
     // Enable UART so we can print status output
-    stdio_init_all();
+//    stdio_init_all();
 
     // Flash an LED for debugging
     const uint LED_PIN = 15;
@@ -45,7 +45,7 @@ int main() {
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
 
-    printf("i2c initted.\n");
+//    printf("i2c initted.\n");
 
 
     MicroMatrix gfx;
@@ -65,34 +65,28 @@ int main() {
     // randomise the plasma
     seed_random_from_rosc();
 
-    int8_t plasmavals[9] = {5, 2, 4, 1, 3, 8, 2, -1, 5};
-
+    int8_t plasmavals[6] = {1, 3, 8, 2, -1, 5};
     uint64_t lastchange = 0;
 
-    uint8_t atx = 0;
-    uint8_t aty = 0;
     while (1) {
         uint64_t now = time();
 
         // combine (up to) three sine waves to make the plasma effect
-        uint32_t phase1 = ((time()*40)/1000000) % 128;
         uint32_t phase2 = ((time()*32)/1000000) % 128;
         uint32_t phase3 = ((time()*24)/1000000) % 128;
-        int32_t val1, val2, val3;
+        int32_t val2, val3;
         uint8_t r; // the final intensity of the plasma
 
         for (uint8_t xcoord = 0; xcoord < gfx.width(); xcoord++) {
             for (uint8_t ycoord = 0; ycoord < gfx.height(); ycoord++) {
 
-                val1 = (8 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase1;
-                val2 = (8 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase2;
-                val3 = (8 * (plasmavals[6] * xcoord + plasmavals[7] * ycoord ) / (1*plasmavals[8])) + phase3;
+                val2 = (8 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase2;
+                val3 = (8 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase3;
 
                 // needs to end up 0-63, sine table ranges 0-128 so mod to get in range
                 // the table returns -127 to 127 so add + numthings*128 to remove negatives
                 //  then divide by numthings*20 to end up offset 0-12
                 // (matching the 12 brightness levels of MicroMatrix)
-//                r = ((sine_table[val1 % 128] + sine_table[val2 % 128] + sine_table[val3 % 128]) + 3*128) / (3*20);
                 r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*20);
 //                r = ((sine_table[val3 % 128]) + 1*128) / (1*20);
 
@@ -103,7 +97,7 @@ int main() {
 
         // change the pattern every Xe6 microseconds (X seconds)
         if ((time() - lastchange) > 20e6) {
-            for (uint8_t i = 0; i < 9; i++) {
+            for (uint8_t i = 0; i < sizeof(plasmavals); i++) {
                 int8_t l = 5; // scale of the plasma bubbles(?)
 
                 if (i == 0 || i == 3 || i == 6) {
