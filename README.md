@@ -2,7 +2,9 @@
 
 This is an example of getting Pimoroni's [Micro Dot pHAT](https://shop.pimoroni.com/products/microdot-phat) working with a Raspberry Pi Pico with the C SDK. The Micro Dot pHAT has three IS31FL3730 modules, each controlling two LTP-305 LED matrices.
 
-An example of the project in action is forthcoming.
+Video clip in action:
+
+[![Pimoroni Micro Dot pHAT lit up full (left) and showing Plasma Effect Demo (right)](thumb-github.jpg)](https://www.youtube.com/watch?v=kdcPKkcmDgo)
 
 This is an evolution of an unpublished project of using the Micro Dot pHAT with a Teensy, so as an added bonus it's built on top of the [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library) library and an existing [IS31FL3730](https://github.com/jbkim/IS31FL3730) library. Rather than implement stubs for missing bits of the Arduino IDE, this time I've just stripped out/re-written the Arduino bits of code with Pico equivalents directly in the libraries as needed.
 
