@@ -7,13 +7,15 @@
 
 #include <Adafruit_GFX_Library/Adafruit_GFX.h>
 
-#define MATRIXWIDTH 30
-#define MATRIXHEIGHT 7
-
 class MicroMatrix : public GFXcanvas8
 {
  private:
-  uint8_t _displayBuffer[MATRIXWIDTH*MATRIXHEIGHT];
+  static const uint8_t SEGMENTWIDTH = 5;
+  static const uint8_t NUMSEGMENTS = 6;
+  static const uint8_t SEGMENTPADDING = 3;
+  static const uint8_t MMWIDTH = (SEGMENTWIDTH+SEGMENTPADDING)*NUMSEGMENTS - SEGMENTPADDING;
+  static const uint8_t MMHEIGHT = 7;
+  uint8_t _displayBuffer[MMWIDTH*MMHEIGHT];
   uint8_t _lastFrameDrawn; // 1 when ready for next frame
   uint8_t _atlevel;
   struct repeating_timer timer;

@@ -9,9 +9,9 @@ IS31FL3730 m1;
 IS31FL3730 m2;
 IS31FL3730 m3;
 
-MicroMatrix::MicroMatrix() : GFXcanvas8(MATRIXWIDTH, MATRIXHEIGHT), _lastFrameDrawn(1), _atlevel(1)
+MicroMatrix::MicroMatrix() : GFXcanvas8(MMWIDTH, MMHEIGHT), _lastFrameDrawn(1), _atlevel(1)
 {
-  memset(_displayBuffer, 0, MATRIXWIDTH * MATRIXHEIGHT * sizeof(uint8_t));
+  memset(_displayBuffer, 0, MMHEIGHT * MMHEIGHT * sizeof(uint8_t));
 }
 
 MicroMatrix::~MicroMatrix()
@@ -49,11 +49,11 @@ void MicroMatrix::display()
   for (uint16_t y = 0; y < 7; y++) {
     uint16_t w = y * WIDTH;
     for (uint16_t x = 0; x < 5; x++) {
-      m1.set_pixel1(x, y, _displayBuffer[(x+25) + w] > _atlevel);
-      m1.set_pixel2(x, y, _displayBuffer[(x+20) + w] > _atlevel);
-      m2.set_pixel1(x, y, _displayBuffer[(x+15) + w] > _atlevel);
-      m2.set_pixel2(x, y, _displayBuffer[(x+10) + w] > _atlevel);
-      m3.set_pixel1(x, y, _displayBuffer[(x+5) + w] > _atlevel);
+      m1.set_pixel1(x, y, _displayBuffer[(x+(SEGMENTWIDTH+SEGMENTPADDING)*5) + w] > _atlevel);
+      m1.set_pixel2(x, y, _displayBuffer[(x+(SEGMENTWIDTH+SEGMENTPADDING)*4) + w] > _atlevel);
+      m2.set_pixel1(x, y, _displayBuffer[(x+(SEGMENTWIDTH+SEGMENTPADDING)*3) + w] > _atlevel);
+      m2.set_pixel2(x, y, _displayBuffer[(x+(SEGMENTWIDTH+SEGMENTPADDING)*2) + w] > _atlevel);
+      m3.set_pixel1(x, y, _displayBuffer[(x+(SEGMENTWIDTH+SEGMENTPADDING)) + w] > _atlevel);
       m3.set_pixel2(x, y, _displayBuffer[x + w] > _atlevel);
     }
   }

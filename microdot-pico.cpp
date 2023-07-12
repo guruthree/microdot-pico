@@ -81,8 +81,8 @@ int main() {
         int32_t val1, val2, val3;
         uint8_t r; // the final intensity of the plasma
 
-        for (uint8_t xcoord = 0; xcoord < MATRIXWIDTH; xcoord++) {
-            for (uint8_t ycoord = 0; ycoord < MATRIXHEIGHT; ycoord++) {
+        for (uint8_t xcoord = 0; xcoord < gfx.width(); xcoord++) {
+            for (uint8_t ycoord = 0; ycoord < gfx.height(); ycoord++) {
 
                 val1 = (8 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase1;
                 val2 = (8 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase2;
