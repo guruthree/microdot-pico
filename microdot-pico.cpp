@@ -37,8 +37,12 @@
 #include "sine.h"
 #include "MicroMatrix.h"
 
+// In the hardware, there's i2c0 and i2c1.
+// 0 is on one set of pins, 1 is on the other.
+// In the sdk examples there's also a examples/pio/i2c example
 #define SDA_PIN 16
 #define SCL_PIN 17
+#define I2C_BUS i2c0
 
 // from pico-composite-PAL-colour
 uint64_t time() {
@@ -61,10 +65,9 @@ int main() {
     sleep_ms(500);
     gpio_put(LED_PIN, !pinstate);
 
-    // This is hardware gpio, there's i2c0 and i2c1.
-    // 0 is on one set of pins, 1 is on the other.
-    // In the sdk examples there's also a examples/pio/i2c example
-    i2c_init(i2c0, 2400000);
+    // any higher then 2.4 MHz I2C and the IS31FL3730
+    // chips wouldn't reliably respond for me
+    i2c_init(I2C_BUS, 2400000);
 
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
@@ -76,7 +79,7 @@ int main() {
 
     MicroMatrix gfx;
     gfx.begin([](uint8_t addr, uint8_t *src, size_t len){
-        i2c_write_blocking(i2c0, addr, src, len, false);
+        i2c_write_blocking(I2C_BUS, addr, src, len, false);
     });
     gfx.fillScreen(255);
     gfx.forceFlip();
