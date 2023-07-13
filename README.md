@@ -32,6 +32,10 @@ I've been working with a Pico W, so if you're using a regular Pico (or other RP2
 
 Note that I have the I2C bus running at **2.4 MHz**, which is a touch faster than recommended for the IS31FL3730. I don't think this can cause any harm, but as always, proceed at your own risk.
 
+Here's the setup I've been running on my breadboard. It's getting dimmer left to right on purpose, see above describing the brightness effects.
+
+![The Micro Dot pHAT wired up to Pico W on a breadboard](breadboard.jpg)
+
 ### Usage
 
 0. Have a working Raspberry Pi Pico C SDK setup.
