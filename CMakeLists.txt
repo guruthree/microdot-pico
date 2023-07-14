@@ -28,6 +28,6 @@ target_link_libraries(microdot-pico
 pico_add_extra_outputs(microdot-pico)
 
 
-pico_enable_stdio_usb(microdot-pico 1)
+pico_enable_stdio_usb(microdot-pico 0)
 pico_enable_stdio_uart(microdot-pico 0)
 

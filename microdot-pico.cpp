@@ -52,9 +52,6 @@ uint64_t time() {
 
 
 int main() {
-    // Enable UART so we can print status output
-//    stdio_init_all();
-
     // Flash an LED for debugging
     const uint LED_PIN = 15;
     bool pinstate = false;
@@ -74,8 +71,6 @@ int main() {
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
-
-//    printf("i2c initted.\n");
 
 
     MicroMatrix gfx;
