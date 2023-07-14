@@ -64,7 +64,7 @@ class MicroMatrix : public GFXcanvas8
   void enableTimer(void);
   void disableTimer(void);
 
-  uint8_t getBrightnessLevels() { return 12; }; 
+  uint8_t getBrightnessLevels() { return 6; }; 
 };
 
 #endif

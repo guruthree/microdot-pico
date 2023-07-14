@@ -14,7 +14,10 @@ add_executable(microdot-pico
     MicroMatrix.cpp
     IS31FL3730/IS31FL3730.cpp
     Adafruit_GFX_Library/Adafruit_GFX.cpp
+    pio_i2c/pio_i2c.cpp
 )
+
+pico_generate_pio_header(microdot-pico ${CMAKE_CURRENT_LIST_DIR}/pio_i2c/i2c.pio)
 
 target_include_directories(microdot-pico PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
@@ -24,6 +27,7 @@ target_link_libraries(microdot-pico
     pico_malloc
     pico_mem_ops
     pico_multicore
+    hardware_pio
 )
 pico_add_extra_outputs(microdot-pico)
 
