@@ -167,30 +167,31 @@ int main() {
     // randomise the plasma
     seed_random_from_rosc();
 
-    int8_t plasmavals[6] = {1, 3, 8, 2, -1, 4};
+    int8_t plasmavals[8] = {1, 3, 8, 32, 2, -1, 4, 24};
     uint64_t lastchange = 0;
 
     while (1) {
         uint64_t now = time();
 
-        // combine (up to) three sine waves to make the plasma effect
-        uint32_t phase2 = ((time()*32)/1000000) % 128;
-        uint32_t phase3 = ((time()*24)/1000000) % 128;
-        int32_t val2, val3;
-        uint8_t r; // the final intensity of the plasma
+// gradual random changes on time divider and the 3 parameters?
+
+        // combine two sine waves to make the plasma effect
+        uint32_t phase1 = ((time()*plasmavals[3])/1000000) % 128;
+        uint32_t phase2 = ((time()*plasmavals[7])/1000000) % 128;
 
         for (uint8_t xcoord = 0; xcoord < canvas.width(); xcoord++) {
             for (uint8_t ycoord = 0; ycoord < canvas.height(); ycoord++) {
 
-                val2 = (5 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase2;
-                val3 = (5 * (plasmavals[3] * xcoord + plasmavals[4] * ycoord ) / (1*plasmavals[5])) + phase3;
+                int32_t val1 = (5 * (plasmavals[0] * xcoord + plasmavals[1] * ycoord ) / (1*plasmavals[2])) + phase1;
+                int32_t val2 = (5 * (plasmavals[4] * xcoord + plasmavals[5] * ycoord ) / (1*plasmavals[6])) + phase2;
 
-                // needs to end up 0-63, sine table ranges 0-128 so mod to get in range
-                // the table returns -127 to 127 so add + numthings*128 to remove negatives
-                //  then divide by numthings*20 to end up offset 0-12
-                // (matching the 12 brightness levels of MicroMatrix)
-                r = ((sine_table[val2 % 128] + sine_table[val3 % 128]) + 2*128) / (2*30);
-//                r = ((sine_table[val3 % 128]) + 1*128) / (1*30);
+                // the final intensity of the plasma,  which needs to end up 0-X
+                // the sine table ranges 0-128 so mod the val to get in range
+                // the table returns -127 to 127 so add + numthings*128 to remove negatives (0-256)
+                // then divide by numthings*Y to get 0-256 to end up offset 0-X, i.e., 256/Y=X
+                // (matching the X brightness levels of MicroMatrix)
+                uint8_t r = ((sine_table[val1 % 128] + sine_table[val2 % 128]) + 2*128) / (2*40);
+//                r = ((sine_table[val1 % 128]) + 1*128) / (1*40);
 
                 canvas.drawPixel(xcoord, ycoord, r);
 
@@ -200,29 +201,18 @@ int main() {
         // change the pattern every Xe6 microseconds (X seconds)
         if ((time() - lastchange) > 8e6) {
             for (uint8_t i = 0; i < sizeof(plasmavals); i++) {
-                int8_t l = 5; // scale of the plasma bubbles(?)
-
-                if (i == 0 || i == 3 || i == 6) {
-                    plasmavals[i] = randi(0, l);
-                }
-                else if (i == 1 || i == 4 || i == 7) {
-                    plasmavals[i] = plasmavals[i-1]+randi(-l/3, l/3);
-                    if (rand() > 0.5)
-                        plasmavals[i] = -plasmavals[i];
-                }
-                else if (i == 2 || i == 5 || i == 8) {
-                    plasmavals[i] = randi(1, l);
-                }
+                if (rand() >= 0.5)
+                    plasmavals[i]++;
+                else
+                    plasmavals[i]--;
             }
+            // prevent division by zero
+            if (plasmavals[2] == 0)
+                plasmavals[2] = 1;
+            if (plasmavals[6] == 0)
+                plasmavals[6] = 1;
 
             lastchange = time();
-
-            // flash the screen to indicate new pattern
-            for (uint8_t i = 0; i < NUM_GFX; i++) {
-                gfxs[i]->fillScreen(0);
-                gfxs[i]->flip();
-            }
-            sleep_ms(50);
         }
 
         // copy onto the invidial microdot panels
