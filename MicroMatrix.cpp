@@ -28,12 +28,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "IS31FL3730/IS31FL3730.h"
 #include "MicroMatrix.h"
-
-IS31FL3730 m1;
-IS31FL3730 m2;
-IS31FL3730 m3;
 
 MicroMatrix::MicroMatrix() : GFXcanvas8(MMWIDTH, MMHEIGHT), _lastFrameDrawn(1), _atlevel(1)
 {

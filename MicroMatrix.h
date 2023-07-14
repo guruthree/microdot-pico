@@ -31,7 +31,8 @@
 
 #include "pico/multicore.h"
 
-#include <Adafruit_GFX_Library/Adafruit_GFX.h>
+#include "IS31FL3730/IS31FL3730.h"
+#include "Adafruit_GFX_Library/Adafruit_GFX.h"
 
 class MicroMatrix : public GFXcanvas8
 {
@@ -46,6 +47,10 @@ class MicroMatrix : public GFXcanvas8
   uint8_t _atlevel;
   struct repeating_timer timer;
   mutex_t mx1; // lock while copying buffers
+
+  IS31FL3730 m1;
+  IS31FL3730 m2;
+  IS31FL3730 m3;
  public:
   MicroMatrix();
   virtual ~MicroMatrix(void); 
