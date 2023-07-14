@@ -39,7 +39,7 @@ MicroMatrix::~MicroMatrix()
 {
 }
 
-void MicroMatrix::begin(void (*write_fun)(uint8_t, uint8_t*, size_t))
+void MicroMatrix::begin(std::function<void (uint8_t, uint8_t*, size_t)> write_fun)
 {
   m1.begin(0x61, write_fun);
   m2.begin(0x62, write_fun);

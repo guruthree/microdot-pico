@@ -3,7 +3,7 @@
 #ifndef _IS31FL3730_H_
 #define _IS31FL3730_H_
 
-#include "hardware/i2c.h"
+#include <functional>
 
 // IS31FL3730 Driver
 
@@ -25,7 +25,7 @@
 
 class IS31FL3730 {
  public:  
-  bool begin(uint8_t addr, void (*write_fun)(uint8_t, uint8_t*, size_t));
+  bool begin(uint8_t addr, std::function<void (uint8_t, uint8_t*, size_t)> write_fun);
   void update(void);
   void clear(void);
   void set_bright(uint8_t bright);
@@ -37,7 +37,7 @@ class IS31FL3730 {
   uint8_t _i2caddr, _brightness = Default_brightness;
   uint8_t _buf_matrix_1[8];
   uint8_t _buf_matrix_2[8];
-  void (*_write_fun)(uint8_t, uint8_t*, size_t);
+  std::function<void (uint8_t, uint8_t*, size_t)> _write_fun;
 };
 
 #endif

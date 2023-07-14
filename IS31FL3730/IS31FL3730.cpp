@@ -12,7 +12,7 @@
 // Split out set_pixel into functions for each matrix
 // Removed decimal, row, and col functions as these are unused
 
-bool IS31FL3730::begin(uint8_t addr, void (*write_fun)(uint8_t, uint8_t*, size_t)) {
+bool IS31FL3730::begin(uint8_t addr, std::function<void (uint8_t, uint8_t*, size_t)> write_fun) {
   _i2caddr = addr;
   _write_fun = write_fun;
 

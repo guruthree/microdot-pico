@@ -55,7 +55,7 @@ class MicroMatrix : public GFXcanvas8
   MicroMatrix();
   virtual ~MicroMatrix(void); 
   
-  void begin(void (*write_fun)(uint8_t, uint8_t*, size_t));
+  void begin(std::function<void (uint8_t, uint8_t*, size_t)> write_fun);
   void display();
   void clearDisplay(void);
   uint8_t wasLastFrameDrawn(void);

@@ -26,6 +26,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <functional>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
@@ -78,9 +79,10 @@ int main() {
 
 
     MicroMatrix gfx;
-    gfx.begin([](uint8_t addr, uint8_t *src, size_t len){
+    static std::function<void (uint8_t, uint8_t*, size_t)> write_fun0 = ([](uint8_t addr, uint8_t *src, size_t len){
         i2c_write_blocking(I2C_BUS, addr, src, len, false);
     });
+    gfx.begin(write_fun0);
     gfx.fillScreen(255);
     gfx.forceFlip();
     gfx.display();
